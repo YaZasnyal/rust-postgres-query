@@ -145,6 +145,10 @@ macro_rules! client_deref_impl {
                 T::prepare(self, sql).await
             }
 
+            async fn prepare_static(&self, sql: &'static str) -> Result<Statement, SqlError> {
+                T::prepare_static(self, sql).await
+            }
+
             async fn execute_raw<'a>(
                 &'a self,
                 statement: &Statement,
