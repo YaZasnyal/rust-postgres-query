@@ -69,11 +69,6 @@ impl GenericClient for Client {
     }
 
     #[deny(unconditional_recursion)]
-    async fn prepare_static(&self, sql: &'static str) -> Result<Statement, SqlError> {
-        Client::prepare_static(self, sql).await
-    }
-
-    #[deny(unconditional_recursion)]
     async fn execute_raw<'a>(
         &'a self,
         statement: &Statement,
@@ -98,11 +93,6 @@ impl GenericClient for DpClient {
     #[deny(unconditional_recursion)]
     async fn prepare(&self, sql: &str) -> Result<Statement, SqlError> {
         DpClientWrapper::prepare(self, sql).await
-    }
-
-    #[deny(unconditional_recursion)]
-    async fn prepare_static(&self, sql: &'static str) -> Result<Statement, SqlError> {
-        DpClientWrapper::prepare_static(self, sql).await
     }
 
     #[deny(unconditional_recursion)]
