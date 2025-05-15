@@ -65,6 +65,14 @@ where
         }
     }
 
+    /// Wrap new client with an existing cache.
+    pub fn map_clone<U: GenericClient>(&self, client: U) -> Caching<U> {
+        Caching {
+            client,
+            cache: self.cache.clone(),
+        }
+    }
+
     /// Return the inner client.
     pub fn into_inner(self) -> C {
         self.client
@@ -213,10 +221,11 @@ macro_rules! impl_cached_transaction {
         impl Caching<$client> {
             /// Start a new transaction that shares the same cache as the current client.
             pub async fn transaction(&mut self) -> Result<Caching<$transaction>, Error> {
-                <$client>::transaction(self)
+                let cache = self.cache.clone();
+                let tx = <$client>::transaction(self)
                     .await
-                    .map(Caching::new)
-                    .map_err(Error::BeginTransaction)
+                    .map_err(Error::BeginTransaction)?;
+                Ok(Caching { client: tx, cache })
             }
         }
     };
